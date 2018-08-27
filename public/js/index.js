@@ -29,11 +29,14 @@ RUN(() => {
 		// 새 메시지가 추가되면
 		chatsRef.on('child_added', (snapshot) => {
 			
-			chatSnapshots.push(snapshot);
-			
 			let isToScrollBottom = messageList.getScrollTop() === messageList.getScrollHeight() - messageList.getHeight();
 			
 			let chatData = snapshot.val();
+			
+			chatSnapshots.push({
+				key : snapshot.key,
+				data : chatData
+			});
 			
 			let icon;
 			messageList.append(DIV({
@@ -100,13 +103,12 @@ RUN(() => {
 				
 				REPEAT(chatSnapshots.length - 100, () => {
 					
-					let fileId = chatSnapshots[0].val().fileId;
+					let fileId = chatSnapshots[0].data.fileId;
 					
 					// 파일 업로드인 경우 업로드 파일도 삭제합니다.
 					if (fileId !== undefined) {
 						uploadsRef.child(fileId).delete();
 					}
-					
 					chatsRef.child(chatSnapshots[0].key).remove();
 					chatSnapshots.shift();
 				});
@@ -389,7 +391,10 @@ RUN(() => {
 				if (lastTime - connection.time < 2 * 60 * 1000) {
 					recentConnections.push(connection);
 					
-					names += connection.name + ' ';
+					if (names !== '') {
+						names += ', ';
+					}
+					names += connection.name;
 				}
 			});
 			
