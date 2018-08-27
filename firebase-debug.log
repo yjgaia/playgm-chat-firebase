@@ -1,17 +1,12 @@
-[debug] [2018-08-27T16:06:26.156Z] ----------------------------------------------------------------------
-[debug] [2018-08-27T16:06:26.158Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\YJ\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase deploy
-[debug] [2018-08-27T16:06:26.158Z] CLI Version:   4.2.0
-[debug] [2018-08-27T16:06:26.158Z] Platform:      win32
-[debug] [2018-08-27T16:06:26.158Z] Node Version:  v10.1.0
-[debug] [2018-08-27T16:06:26.158Z] Time:          Tue Aug 28 2018 01:06:26 GMT+0900 (대한민국 표준시)
-[debug] [2018-08-27T16:06:26.158Z] ----------------------------------------------------------------------
+[debug] [2018-08-27T16:16:30.454Z] ----------------------------------------------------------------------
+[debug] [2018-08-27T16:16:30.456Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\YJ\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase deploy
+[debug] [2018-08-27T16:16:30.456Z] CLI Version:   4.2.0
+[debug] [2018-08-27T16:16:30.456Z] Platform:      win32
+[debug] [2018-08-27T16:16:30.456Z] Node Version:  v10.1.0
+[debug] [2018-08-27T16:16:30.457Z] Time:          Tue Aug 28 2018 01:16:30 GMT+0900 (대한민국 표준시)
+[debug] [2018-08-27T16:16:30.457Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2018-08-27T16:06:26.169Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2018-08-27T16:06:26.169Z] > authorizing via signed-in user
-[debug] [2018-08-27T16:06:26.171Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
-[debug] [2018-08-27T16:06:26.171Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
-
-[debug] [2018-08-27T16:06:26.455Z] <<< HTTP RESPONSE 200
-[debug] [2018-08-27T16:06:26.463Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/playgm-chat  
+[debug] [2018-08-27T16:16:30.467Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-08-27T16:16:30.468Z] > authorizing via signed-in user
+[debug] [2018-08-27T16:16:30.470Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/playgm-chat  
  
-[debug] [2018-08-27T16:06:27.322Z] <<< HTTP RESPONSE 200

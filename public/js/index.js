@@ -10,6 +10,7 @@ RUN(() => {
 	let startChat = () => {
 		
 		let chatSnapshots = [];
+		let iconMap = {};
 		
 		// 채팅 목록
 		let messageList = DIV({
@@ -45,7 +46,7 @@ RUN(() => {
 						marginRight : 6,
 						width : 19.5,
 						height : 19.5,
-						borderRadius : 19.5
+						borderRadius : 20
 					},
 					src : userIconURLs[chatData.userId] === undefined ? 'resource/default-icon.png' : userIconURLs[chatData.userId]
 				}), SPAN({
@@ -70,9 +71,18 @@ RUN(() => {
 				}) : chatData.message]
 			}));
 			
+			if (iconMap[chatData.userId] === undefined) {
+				iconMap[chatData.userId] = [];
+			}
+			iconMap[chatData.userId].push(icon);
+			
 			iconsRef.child(chatData.userId).getDownloadURL().then((url) => {
-				icon.setSrc(url);
 				userIconURLs[chatData.userId] = url;
+				
+				EACH(iconMap[chatData.userId], (icon) => {
+					icon.setSrc(url);
+				});
+				
 			}).catch(() => {
 				// ignore.
 			});
@@ -87,6 +97,14 @@ RUN(() => {
 			// 오래된 메시지 삭제
 			if (chatSnapshots.length > 100) {
 				REPEAT(chatSnapshots.length - 100, () => {
+					
+					let fileId = chatSnapshots[0].val().fileId;
+					
+					// 파일 업로드인 경우 업로드 파일도 삭제합니다.
+					if (fileId !== undefined) {
+						uploadsRef.child(fileId).delete()
+					}
+					
 					chatsRef.child(chatSnapshots[0].key).remove();
 					chatSnapshots.shift();
 				});
@@ -267,7 +285,7 @@ RUN(() => {
 							
 							uploadTask.on('state_changed', (snapshot) => {
 								uploadButton.empty();
-								uploadButton.append((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+								uploadButton.append(INTEGER((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
 							}, () => {
 								uploadButton.empty();
 								uploadButton.append(FontAwesome.GetIcon('upload'));
@@ -279,6 +297,7 @@ RUN(() => {
 									chatsRef.push({
 										userId : user.uid,
 										name : user.displayName,
+										fileId : fileId,
 										fileName : file.name,
 										downloadURL : downloadURL
 									});
