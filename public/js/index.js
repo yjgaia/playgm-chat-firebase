@@ -96,13 +96,14 @@ RUN(() => {
 			
 			// 오래된 메시지 삭제
 			if (chatSnapshots.length > 100) {
+				
 				REPEAT(chatSnapshots.length - 100, () => {
 					
 					let fileId = chatSnapshots[0].val().fileId;
 					
 					// 파일 업로드인 경우 업로드 파일도 삭제합니다.
 					if (fileId !== undefined) {
-						uploadsRef.child(fileId).delete()
+						uploadsRef.child(fileId).delete();
 					}
 					
 					chatsRef.child(chatSnapshots[0].key).remove();
