@@ -29,7 +29,7 @@ RUN(() => {
 		// 새 메시지가 추가되면
 		chatsRef.on('child_added', (snapshot) => {
 			
-			let isToScrollBottom = messageList.getScrollTop() === messageList.getScrollHeight() - messageList.getHeight();
+			let isToScrollBottom = messageList.getScrollTop() >= messageList.getScrollHeight() - messageList.getHeight() - 10;
 			
 			let chatData = snapshot.val();
 			
