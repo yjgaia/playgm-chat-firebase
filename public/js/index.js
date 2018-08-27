@@ -1,5 +1,6 @@
 RUN(() => {
 	
+	let connectionsRef = firebase.database().ref('connections');
 	let chatsRef = firebase.database().ref('chats');
 	let iconsRef = firebase.storage().ref('icons');
 	let uploadsRef = firebase.storage().ref('uploads');
@@ -7,7 +8,7 @@ RUN(() => {
 	let user;
 	let userIconURLs = {};
 	
-	let startChat = () => {
+	let startService = () => {
 		
 		let chatSnapshots = [];
 		let iconMap = {};
@@ -44,8 +45,8 @@ RUN(() => {
 					style : {
 						marginBottom : -5,
 						marginRight : 6,
-						width : 19,
-						height : 19,
+						width : 20,
+						height : 20,
 						borderRadius : 20
 					},
 					src : userIconURLs[chatData.userId] === undefined ? 'resource/default-icon.png' : userIconURLs[chatData.userId]
@@ -230,8 +231,8 @@ RUN(() => {
 								}), A({
 									c : iconPreview = IMG({
 										style : {
-											width : 19,
-											height : 19,
+											width : 20,
+											height : 20,
 											borderRadius : 20
 										},
 										src : userIconURLs[user.uid] === undefined ? 'resource/default-icon.png' : userIconURLs[user.uid]
@@ -357,6 +358,55 @@ RUN(() => {
 				}
 			}
 		}).appendTo(BODY);
+		
+		// 1분에 한번씩 커넥션을 유지합니다.
+		INTERVAL(60, RAR(() => {
+			connectionsRef.child(user.uid).set({
+				name : user.displayName,
+				time : firebase.database.ServerValue.TIMESTAMP
+			});
+		}));
+		
+		// 최근 유저를 가져옵니다.
+		connectionsRef.once('value', (snapshot) => {
+			
+			let connections = [];
+			snapshot.forEach((childSnapshot) => {
+				connections.push(childSnapshot.val());
+			});
+			
+			let lastTime = 0;
+			connections.forEach((connection) => {
+				if (connection.time > lastTime) {
+					lastTime = connection.time;
+				}
+			});
+			
+			let names = '';
+			let recentConnections = [];
+			connections.forEach((connection) => {
+				// 마지막 접속자와 비교하여 2분 미만 내에 커넥션을 유지한 사용자만
+				if (lastTime - connection.time < 2 * 60 * 1000) {
+					recentConnections.push(connection);
+					
+					names += connection.name + ' ';
+				}
+			});
+			
+			messageList.append(DIV({
+				style : {
+					padding : '0 6px',
+					paddingBottom : 10,
+					color : '#080',
+					fontWeight : 'bold'
+				},
+				c : '최근 유저(' + recentConnections.length + '명) : ' + names
+			}));
+			
+			messageList.scrollTo({
+				top : 999999
+			});
+		});
 	};
 	
 	// 로그인 체크
@@ -382,7 +432,7 @@ RUN(() => {
 						
 						if (user === undefined) {
 							user = authResult.user;
-							startChat();
+							startService();
 						}
 						
 						return false;
@@ -393,7 +443,7 @@ RUN(() => {
 		
 		else if (user === undefined) {
 			user = _user;
-			startChat();
+			startService();
 		}
 	});
 });
