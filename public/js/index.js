@@ -44,8 +44,8 @@ RUN(() => {
 					style : {
 						marginBottom : -5,
 						marginRight : 6,
-						width : 19.5,
-						height : 19.5,
+						width : 19,
+						height : 19,
 						borderRadius : 20
 					},
 					src : userIconURLs[chatData.userId] === undefined ? 'resource/default-icon.png' : userIconURLs[chatData.userId]
@@ -229,9 +229,9 @@ RUN(() => {
 								}), A({
 									c : iconPreview = IMG({
 										style : {
-											width : 19.5,
-											height : 19.5,
-											borderRadius : 19.5
+											width : 19,
+											height : 19,
+											borderRadius : 20
 										},
 										src : userIconURLs[user.uid] === undefined ? 'resource/default-icon.png' : userIconURLs[user.uid]
 									}),
