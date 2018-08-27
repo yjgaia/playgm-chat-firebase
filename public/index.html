@@ -2,20 +2,41 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1">
+		<link rel="shortcut icon" href="resource/favicon.ico" />
+		<link href="resource/UPPERCASE-BOOT/R/BASE_STYLE.css" rel="stylesheet" />
+		<link href="resource/FontAwesome/R/css/all.min.css" rel="stylesheet" />
 		<title>PlayGMChat</title>
-		
-		<!-- update the version number as needed -->
-		<script defer src="/__/firebase/5.4.1/firebase-app.js"></script>
-		<!-- include only the Firebase features as you need -->
-		<script defer src="/__/firebase/5.4.1/firebase-auth.js"></script>
-		<script defer src="/__/firebase/5.4.1/firebase-database.js"></script>
-		<script defer src="/__/firebase/5.4.1/firebase-messaging.js"></script>
-		<script defer src="/__/firebase/5.4.1/firebase-storage.js"></script>
-		<!-- initialize the SDK after all desired features are loaded -->
-		<script defer src="/__/firebase/init.js"></script>
+		<!-- Firebase -->
+		<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase.js"></script>
+		<!-- FirebaseUI -->
+		<script src="https://www.gstatic.com/firebasejs/ui/3.4.0/firebase-ui-auth__ko.js"></script>
+		<link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
 	</head>
 	<body>
-		프금챗 파베버전
+	    <noscript>
+            <p style="padding:15px;">JavaScript is disabled. Please enable JavaScript in your browser.</p>
+        </noscript>
+		<script src="js/UPPERCASE-CORE/BROWSER.js"></script>
+		<script>BOX('UUI');</script>
+		<script src="js/UUI/BROWSER.js"></script>
+		<script>BOX('FontAwesome');</script>
+		<script src="js/FontAwesome/BROWSER.js"></script>
+		<!-- 개발 모드 -->
+		<script>CONFIG.isDevMode = true;</script>
+		<script>INIT_OBJECTS();</script>
+		<!-- Firebase 초기화 -->
+		<script>
+			firebase.initializeApp({
+				apiKey: "AIzaSyB81HNg04nq4SKBb6QtuVMVgWC2hLrzftg",
+				authDomain: "playgm-chat.firebaseapp.com",
+				databaseURL: "https://playgm-chat.firebaseio.com",
+				projectId: "playgm-chat",
+				storageBucket: "playgm-chat.appspot.com",
+				messagingSenderId: "523606201720"
+			});
+		</script>
+		<script src="js/index.js"></script>
 	</body>
 </html>
