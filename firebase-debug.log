@@ -10,3 +10,93 @@
 [debug] [2018-08-27T16:16:30.468Z] > authorizing via signed-in user
 [debug] [2018-08-27T16:16:30.470Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/playgm-chat  
  
+[debug] [2018-08-27T16:16:32.579Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'playgm-chat'...
+[info] 
+[info] i  deploying database, storage, firestore, functions, hosting
+[info] i  database: checking rules syntax...
+[debug] [2018-08-27T16:16:34.697Z] >>> HTTP REQUEST PUT https://playgm-chat.firebaseio.com/.settings/rules.json?dryRun=true  
+ {
+	/* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+	"rules": {
+		"chats": {
+			".read": "auth != null",
+			".write": "auth != null"
+		}
+	}
+}
+[debug] [2018-08-27T16:16:37.819Z] <<< HTTP RESPONSE 200
+[info] +  database: rules syntax for database playgm-chat is valid
+[debug] [2018-08-27T16:16:37.821Z] >>> HTTP REQUEST GET https://appengine.googleapis.com/v1/apps/playgm-chat  
+ 
+[debug] [2018-08-27T16:16:38.981Z] <<< HTTP RESPONSE 200
+[info] i  storage: checking storage.rules for compilation errors...
+[debug] [2018-08-27T16:16:38.983Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/playgm-chat:test  
+
+[debug] [2018-08-27T16:16:40.374Z] <<< HTTP RESPONSE 200
+[info] +  storage: rules file storage.rules compiled successfully
+[info] i  firestore: checking firestore.rules for compilation errors...
+[debug] [2018-08-27T16:16:40.378Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/playgm-chat:test  
+
+[debug] [2018-08-27T16:16:41.640Z] <<< HTTP RESPONSE 200
+[info] +  firestore: rules file firestore.rules compiled successfully
+[debug] [2018-08-27T16:16:41.649Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "~6.0.0",
+    "firebase-functions": "^2.0.3"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2018-08-27T16:16:41.652Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudfunctions.googleapis.com/projectSettings/playgm-chat?view=CONSUMER_VIEW  
+ 
+[debug] [2018-08-27T16:16:41.655Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/runtimeconfig.googleapis.com/projectSettings/playgm-chat?view=CONSUMER_VIEW  
+ 
+[debug] [2018-08-27T16:16:43.206Z] <<< HTTP RESPONSE 200
+[debug] [2018-08-27T16:16:43.246Z] <<< HTTP RESPONSE 200
+[info] +  functions: all necessary APIs are enabled
+[debug] [2018-08-27T16:16:43.249Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/playgm-chat  
+ 
+[debug] [2018-08-27T16:16:44.181Z] <<< HTTP RESPONSE 200
+[debug] [2018-08-27T16:16:44.182Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/523606201720:getServerAppConfig  
+ 
+[debug] [2018-08-27T16:16:45.084Z] <<< HTTP RESPONSE 200
+[debug] [2018-08-27T16:16:45.086Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/playgm-chat/versions  
+
+[debug] [2018-08-27T16:16:46.500Z] <<< HTTP RESPONSE 200
+[info] i  storage: uploading rules storage.rules...
+[debug] [2018-08-27T16:16:46.502Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/playgm-chat/rulesets  
+
+[debug] [2018-08-27T16:16:47.798Z] <<< HTTP RESPONSE 200
+[debug] [2018-08-27T16:16:47.798Z] [rules] created ruleset projects/playgm-chat/rulesets/a2738441-847d-4ada-ad52-7f4ae5c538cb
+[info] i  firestore: uploading rules firestore.rules...
+[debug] [2018-08-27T16:16:47.802Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/playgm-chat/rulesets  
+
+[debug] [2018-08-27T16:16:47.803Z] >>> HTTP REQUEST GET https://firestore.googleapis.com/v1beta1/projects/playgm-chat/databases/(default)/indexes  
+ 
+[debug] [2018-08-27T16:16:48.497Z] <<< HTTP RESPONSE 200
+[debug] [2018-08-27T16:16:49.147Z] <<< HTTP RESPONSE 200
+[debug] [2018-08-27T16:16:49.147Z] [rules] created ruleset projects/playgm-chat/rulesets/c6862f60-ce59-4ca7-bee9-a8074ffaea58
+[info] i  functions: preparing functions directory for uploading...
+[debug] [2018-08-27T16:16:49.155Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/playgm-chat/configs  
+ 
+[debug] [2018-08-27T16:16:49.628Z] <<< HTTP RESPONSE 200
+[info] i  hosting[playgm-chat]: beginning deploy...
+[info] i  hosting[playgm-chat]: found 61 files in public
+[debug] [2018-08-27T16:16:49.813Z] [hosting] hash cache [cHVibGlj] stored for 61 files
+[debug] [2018-08-27T16:16:49.814Z] [hosting][hash queue][FINAL]
+[debug] [2018-08-27T16:16:49.814Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/playgm-chat/versions/9407b6542dc0d0cb:populateFiles  
+ <request body omitted>
+[debug] [2018-08-27T16:16:51.161Z] <<< HTTP RESPONSE 200
+[debug] [2018-08-27T16:16:51.163Z] [hosting][populate queue][FINAL]
+[debug] [2018-08-27T16:16:51.163Z] [hosting] uploads queued: 1
