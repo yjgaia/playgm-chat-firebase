@@ -35,6 +35,26 @@ RUN(() => {
 			}
 		}).appendTo(BODY);
 		
+		// 시스템 메시지 추가
+		let addSystemMessage = (message, scroll) => {
+			
+			messageList.append(DIV({
+				style : {
+					padding : '0 8px',
+					paddingBottom : 8,
+					color : '#080',
+					fontWeight : 'bold'
+				},
+				c : message
+			}));
+			
+			if (scroll !== false) {
+				messageList.scrollTo({
+					top : 999999
+				});
+			}
+		};
+		
 		// 새 메시지가 추가되면
 		chatsRef.on('child_added', (snapshot) => {
 			loading.remove();
@@ -50,22 +70,19 @@ RUN(() => {
 			
 			// 카페 새 글 알림
 			if (chatData.isNewCafeArticle === true) {
-				messageList.append(DIV({
+				addSystemMessage(['새 글 알림! ', A({
 					style : {
-						padding : '0 8px',
-						paddingBottom : 8,
-						color : '#080',
-						fontWeight : 'bold'
+						textDecoration : 'underline'
 					},
-					c : ['새 글 알림! ', A({
-						style : {
-							textDecoration : 'underline'
-						},
-						target : '_blank',
-						href : 'http://cafe.naver.com/playgm/' + chatData.articleId,
-						c : chatData.title + ', by ' + chatData.nickname
-					})]
-				}));
+					target : '_blank',
+					href : 'http://cafe.naver.com/playgm/' + chatData.articleId,
+					c : chatData.title + ', by ' + chatData.nickname
+				})], false);
+			}
+			
+			// 닉변 알림
+			if (chatData.isNameChanged === true) {
+				addSystemMessage('닉네임 변경 : ' + chatData.originName + ' -> ' + chatData.newName);
 			}
 			
 			// 새 메시지
@@ -386,11 +403,52 @@ RUN(() => {
 					form.setData({});
 					
 					if (message !== '') {
-						chatsRef.push({
-							userId : user.uid,
-							name : user.displayName,
-							message : message
-						});
+						
+						// 명령어 처리
+						if (message[0] === '/') {
+							
+							let args = message.substring(1).split(' ');
+							let command = args[0];
+							args.shift();
+							
+							if (command === '명령어' || command === '도움말' || command === '?') {
+								addSystemMessage('명령어 : 닉네임, 로그아웃');
+							}
+							
+							else if (command === '닉네임') {
+								
+								let originName = user.displayName;
+								
+								if (args.length === 0) {
+									addSystemMessage('사용법 : /닉네임 [name]');
+								}
+								
+								else if (originName !== args[0] && /^[ㄱ-ㅎ가-힣a-zA-Z0-9]{1,6}$/.test(args[0]) === true) {
+									user.updateProfile({
+										displayName : args[0]
+									}).then(() => {
+										chatsRef.push({
+											isNameChanged : true,
+											originName : originName,
+											newName : user.displayName
+										});
+									});
+								}
+							}
+							
+							else if (command === '로그아웃') {
+								firebase.auth().signOut();
+							}
+						}
+						
+						// 메시지 전송
+						else {
+							chatsRef.push({
+								userId : user.uid,
+								name : user.displayName,
+								message : message
+							});
+						}
 					}
 				}
 			}
@@ -433,19 +491,7 @@ RUN(() => {
 				}
 			});
 			
-			messageList.append(DIV({
-				style : {
-					padding : '0 8px',
-					paddingBottom : 8,
-					color : '#080',
-					fontWeight : 'bold'
-				},
-				c : '최근 유저(' + recentConnections.length + '명) : ' + names
-			}));
-			
-			messageList.scrollTo({
-				top : 999999
-			});
+			addSystemMessage('최근 유저(' + recentConnections.length + '명) : ' + names);
 		});
 	};
 	
