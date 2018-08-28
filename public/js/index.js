@@ -1,5 +1,7 @@
 RUN(() => {
 	
+	const URL_REGEX = /(?:(?:ht|f)tp(?:s?)\:\/\/|~\/|\/)?(?:\w+:\w+@)?((?:(?:[-a-z\u0080-\uffff\d{1-3}]+\.)+(?:[a-z\u0080-\uffff]+))|((\b25[0-5]\b|\b[2][0-4][0-9]\b|\b[0-1]?[0-9]?[0-9]\b)(\.(\b25[0-5]\b|\b[2][0-4][0-9]\b|\b[0-1]?[0-9]?[0-9]\b)){3}))(?::[\d]{1,5})?(?:(?:(?:\/(?:[-\u0000-\uffff~!$+|.,=]|%[a-f\d]{2})+)+|\/)+|\?|#)?(?:(?:\?(?:[-\u0000-\uffff~!$+|.,*:]|%[a-f\d{2}])+=?(?:[-\u0000-\uffff~!$+|.,*:=]|%[a-f\d]{2})*)(?:&(?:[-\u0000-\uffff~!$+|.,*:]|%[a-f\d{2}])+=?(?:[-\u0000-\uffff~!$+|.,*:=]|%[a-f\d]{2})*)*)*(?:#(?:[-\u0000-\uffff~!$ |\/.,*:;=]|%[a-f\d]{2})*)?$/i;
+	
 	let connectionsRef = firebase.database().ref('connections');
 	let chatsRef = firebase.database().ref('chats');
 	let iconsRef = firebase.storage().ref('icons');
@@ -122,7 +124,54 @@ RUN(() => {
 						c : chatData.fileName !== undefined ? chatData.fileName : chatData.downloadURL,
 						target : '_blank',
 						href : chatData.downloadURL
-					}) : chatData.message]
+					}) : RUN(() => {
+						
+						let children = [];
+						
+						EACH(chatData.message.split(' '), (message, i) => {
+							if (i > 0) {
+								children.push(' ');
+							}
+							
+							// 링크를 찾아 교체합니다.
+							let replaceLink = () => {
+								
+								let match = message.match(URL_REGEX);
+								if (match === TO_DELETE) {
+									children.push(message);
+								}
+								
+								else {
+									
+									let url = match[0];
+									if (url.indexOf(' ') !== -1) {
+										url = url.substring(0, url.indexOf(' '));
+									}
+									
+									let index = message.indexOf(url);
+									
+									children.push(message.substring(0, index));
+									children.push(A({
+										style : {
+											textDecoration : 'underline'
+										},
+										target : '_blank',
+										href : url,
+										c : url
+									}));
+									
+									message = message.substring(index + url.length);
+									
+									replaceLink();
+								}
+							};
+							replaceLink();
+						});
+						
+						return SPAN({
+							c : children
+						});
+					})]
 				}));
 				
 				if (iconMap[chatData.userId] === undefined) {
