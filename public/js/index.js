@@ -29,6 +29,62 @@ RUN(() => {
 			Notification.requestPermission();
 		}
 		
+		// 메뉴 버튼
+		A({
+			style : {
+				position : 'fixed',
+				right : INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS' ? 18 : 0,
+				top : 0,
+				padding : 10
+			},
+			c : FontAwesome.GetIcon('bars'),
+			on : {
+				tap : () => {
+					
+					// 메뉴 열기
+					let menu = UUI.PANEL({
+						style : {
+							position : 'fixed',
+							right : 0,
+							top : 0,
+							width : 300,
+							height : '100%',
+							backgroundColor : '#444',
+							color : '#fff'
+						},
+						contentStyle : {
+							padding : 20
+						},
+						c : [A({
+							style : {
+								position : 'fixed',
+								right : 0,
+								top : 0,
+								padding : 10
+							},
+							c : FontAwesome.GetIcon('times'),
+							on : {
+								tap : () => {
+									menu.remove();
+								}
+							}
+						}),
+						
+						H3({
+							style : {
+								fontSize : 30
+							},
+							c : 'MENU'
+						}),
+						
+						P({
+							c : '준비중입니다.'
+						})]
+					}).appendTo(BODY);
+				}
+			}
+		}).appendTo(BODY);
+		
 		let chatSnapshots = [];
 		let iconMap = {};
 		let preview;
@@ -115,9 +171,7 @@ RUN(() => {
 		
 		let uploadFile = (file) => {
 			
-			let fileId = UUID();
-			
-			let uploadTask = uploadsRef.child(fileId).put(file);
+			let uploadTask = uploadsRef.child(file.name).put(file);
 			
 			uploadTask.on('state_changed', (snapshot) => {
 				uploadButton.empty();
@@ -133,7 +187,6 @@ RUN(() => {
 					chatsRef.push({
 						userId : user.uid,
 						name : user.displayName,
-						fileId : fileId,
 						fileName : file.name,
 						downloadURL : downloadURL,
 						isImage : file.type.indexOf('image') !== -1
@@ -347,11 +400,11 @@ RUN(() => {
 				
 				REPEAT(chatSnapshots.length - 100, () => {
 					
-					let fileId = chatSnapshots[0].data.fileId;
+					let fileName = chatSnapshots[0].data.fileName;
 					
 					// 파일 업로드인 경우 업로드 파일도 삭제합니다.
-					if (fileId !== undefined) {
-						uploadsRef.child(fileId).delete();
+					if (fileName !== undefined) {
+						uploadsRef.child(fileName).delete();
 					}
 					
 					chatsRef.child(chatSnapshots[0].key).remove();
