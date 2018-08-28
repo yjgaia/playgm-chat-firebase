@@ -398,18 +398,15 @@ RUN(() => {
 			// 오래된 메시지 삭제
 			if (chatSnapshots.length > 100) {
 				
-				REPEAT(chatSnapshots.length - 100, () => {
-					
-					let fileName = chatSnapshots[0].data.fileName;
-					
-					// 파일 업로드인 경우 업로드 파일도 삭제합니다.
-					if (fileName !== undefined) {
-						uploadsRef.child(fileName).delete();
-					}
-					
-					chatsRef.child(chatSnapshots[0].key).remove();
-					chatSnapshots.shift();
-				});
+				let fileName = chatSnapshots[0].data.fileName;
+				
+				// 파일 업로드인 경우 업로드 파일도 삭제합니다.
+				if (fileName !== undefined) {
+					uploadsRef.child(fileName).delete();
+				}
+				
+				chatsRef.child(chatSnapshots[0].key).remove();
+				chatSnapshots.shift();
 			}
 		});
 		
