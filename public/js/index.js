@@ -47,7 +47,7 @@ RUN(() => {
 							position : 'fixed',
 							right : 0,
 							top : 0,
-							width : 300,
+							width : 260,
 							height : '100%',
 							backgroundColor : '#444',
 							color : '#fff'
