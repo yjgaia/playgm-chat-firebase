@@ -301,36 +301,7 @@ RUN(() => {
 										},
 										target : '_blank',
 										href : url,
-										c : url,
-										on : {
-											mouseover : (e) => {
-												
-												// 모바일 제외
-												if (
-												INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS' &&
-												preview === undefined && url.indexOf('code.playgm.co.kr') !== -1) {
-													
-													preview = IFRAME({
-														style : {
-															position : 'fixed',
-															left : e.getLeft() + 10,
-															top : e.getTop() - 42 - 8,
-															width : 600,
-															height : 700,
-															backgroundColor : '#eee',
-															border : '1px solid #333'
-														},
-														src : url
-													}).appendTo(BODY);
-												}
-											},
-											mouseout : () => {
-												if (preview !== undefined) {
-													preview.remove();
-													preview = undefined;
-												}
-											}
-										}
+										c : url
 									}));
 									
 									message = message.substring(index + url.length);
