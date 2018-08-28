@@ -6947,8 +6947,12 @@ OVERRIDE(MSG, (origin) => {
 					msgs = msgData[key];
 				}
 				
+				if (msgs === undefined) {
+					SHOW_ERROR('MSG', key + '에 해당하는 문자열을 찾을 수 없습니다.');
+				}
+				
 				let msg = msgs[INFO.getLang()];
-		
+				
 				if (msg === undefined) {
 					
 					let lang;
@@ -8532,6 +8536,10 @@ global.E = CLASS({
 		let getFiles = self.getFiles = () => {
 			return e.dataTransfer.files;
 		};
+		
+		let getClipboardItems = self.getClipboardItems = () => {
+			return e.clipboardData === undefined || e.clipboardData.items === undefined ? [] : e.clipboardData.items;
+		};
 	}
 });
 
@@ -8572,6 +8580,10 @@ global.EMPTY_E = CLASS({
 		
 		let getWheelDelta = self.getWheelDelta = () => {
 			return 0;
+		};
+		
+		let getClipboardItems = self.getClipboardItems = () => {
+			return [];
 		};
 	}
 });

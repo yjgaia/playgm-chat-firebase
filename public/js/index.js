@@ -1,6 +1,7 @@
 RUN(() => {
 	
 	const URL_REGEX = /(?:(?:ht|f)tp(?:s?)\:\/\/|~\/|\/)?(?:\w+:\w+@)?((?:(?:[-a-z\u0080-\uffff\d{1-3}]+\.)+(?:[a-z\u0080-\uffff]+))|((\b25[0-5]\b|\b[2][0-4][0-9]\b|\b[0-1]?[0-9]?[0-9]\b)(\.(\b25[0-5]\b|\b[2][0-4][0-9]\b|\b[0-1]?[0-9]?[0-9]\b)){3}))(?::[\d]{1,5})?(?:(?:(?:\/(?:[-\u0000-\uffff~!$+|.,=]|%[a-f\d]{2})+)+|\/)+|\?|#)?(?:(?:\?(?:[-\u0000-\uffff~!$+|.,*:]|%[a-f\d{2}])+=?(?:[-\u0000-\uffff~!$+|.,*:=]|%[a-f\d]{2})*)(?:&(?:[-\u0000-\uffff~!$+|.,*:]|%[a-f\d{2}])+=?(?:[-\u0000-\uffff~!$+|.,*:=]|%[a-f\d]{2})*)*)*(?:#(?:[-\u0000-\uffff~!$ |\/.,*:;=]|%[a-f\d]{2})*)?$/i;
+	const MAX_FILE_SIZE = 20971520;
 	
 	let connectionsRef = firebase.database().ref('connections');
 	let chatsRef = firebase.database().ref('chats');
@@ -10,10 +11,27 @@ RUN(() => {
 	let user;
 	let userIconURLs = {};
 	
+	let chatStore = STORE('PlayGMChat');
+	let skin = chatStore.get('skin');
+	if (skin === undefined) {
+		skin = '기본';
+	}
+	
+	let skinData = SKINS[skin];
+	if (skinData === undefined) {
+		skinData = SKINS.기본
+	}
+	
 	let startService = () => {
+		
+		// 호출 허락
+		if (Notification.permission !== 'granted') {
+			Notification.requestPermission();
+		}
 		
 		let chatSnapshots = [];
 		let iconMap = {};
+		let preview;
 		
 		let loading = IMG({
 			style : {
@@ -27,7 +45,10 @@ RUN(() => {
 		// 채팅 목록
 		let messageList = DIV({
 			style : {
+				backgroundColor : skinData.backgroundColor,
+				color : skinData.color,
 				paddingTop : 10,
+				paddingBottom : 5,
 				overflowY : 'scroll',
 				onDisplayResize : (width, height) => {
 					return {
@@ -55,6 +76,70 @@ RUN(() => {
 					top : 999999
 				});
 			}
+		};
+		
+		let showRecentlyUsers = () => {
+			
+			// 최근 유저를 가져옵니다.
+			connectionsRef.once('value', (snapshot) => {
+				
+				let connections = [];
+				snapshot.forEach((childSnapshot) => {
+					connections.push(childSnapshot.val());
+				});
+				
+				let lastTime = 0;
+				connections.forEach((connection) => {
+					if (connection.time > lastTime) {
+						lastTime = connection.time;
+					}
+				});
+				
+				let names = '';
+				let recentConnections = [];
+				connections.forEach((connection) => {
+					// 마지막 접속자와 비교하여 2분 미만 내에 커넥션을 유지한 사용자만
+					if (lastTime - connection.time < 2 * 60 * 1000) {
+						recentConnections.push(connection);
+						
+						if (names !== '') {
+							names += ', ';
+						}
+						names += connection.name;
+					}
+				});
+				
+				addSystemMessage('최근 유저(' + recentConnections.length + '명) : ' + names);
+			});
+		};
+		
+		let uploadFile = (file) => {
+			
+			let fileId = UUID();
+			
+			let uploadTask = uploadsRef.child(fileId).put(file);
+			
+			uploadTask.on('state_changed', (snapshot) => {
+				uploadButton.empty();
+				uploadButton.append(INTEGER((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
+			}, () => {
+				uploadButton.empty();
+				uploadButton.append(FontAwesome.GetIcon('upload'));
+			}, () => {
+				uploadButton.empty();
+				uploadButton.append(FontAwesome.GetIcon('upload'));
+				
+				uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+					chatsRef.push({
+						userId : user.uid,
+						name : user.displayName,
+						fileId : fileId,
+						fileName : file.name,
+						downloadURL : downloadURL,
+						isImage : file.type.indexOf('image') !== -1
+					});
+				});
+			});
 		};
 		
 		// 새 메시지가 추가되면
@@ -108,7 +193,8 @@ RUN(() => {
 					}), SPAN({
 						style : {
 							fontWeight : 'bolder',
-							marginRight : 6
+							marginRight : 6,
+							color : skinData.nameColor
 						},
 						c : chatData.name
 					}), SPAN({
@@ -123,8 +209,66 @@ RUN(() => {
 						},
 						c : chatData.fileName !== undefined ? chatData.fileName : chatData.downloadURL,
 						target : '_blank',
-						href : chatData.downloadURL
+						href : chatData.downloadURL,
+						on : {
+							mouseover : (e) => {
+								
+								// 모바일 제외
+								if (
+								INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS' &&
+								preview === undefined && chatData.isImage === true) {
+									
+									preview = DIV({
+										style : {
+											position : 'fixed',
+											left : e.getLeft() + 10,
+											top : e.getTop() - 42 - 8,
+											width : 60,
+											height : 40,
+											backgroundColor : '#eee',
+											backgroundImage : chatData.downloadURL,
+											backgroundSize : 'cover',
+											backgroundPosition : 'center center',
+											border : '1px solid #333'
+										}
+									}).appendTo(BODY);
+								}
+							},
+							mouseout : () => {
+								if (preview !== undefined) {
+									preview.remove();
+									preview = undefined;
+								}
+							}
+						}
 					}) : RUN(() => {
+						
+						// 호출 기능
+						if (chatData.isCalled !== true && chatData.name !== user.displayName && (chatData.message + ' ').indexOf('@' + user.displayName + ' ') !== -1) {
+							
+							if (Notification.permission !== 'granted') {
+								DELAY(() => {
+									chatsRef.push({
+										userId : user.uid,
+										name : user.displayName,
+										message : '(호출 기능이 차단된 유저입니다)'
+									});
+								});
+							}
+							
+							else if (document.hasFocus() !== true) {
+								new Notification(chatData.name, {
+									body : chatData.message,
+								}).onclick = () => {
+									focus();
+								};
+							}
+							
+							let updates = {};
+							chatData.isCalled = true;
+							updates[snapshot.key] = chatData;
+							chatsRef.update(updates);
+						}
 						
 						let children = [];
 						
@@ -218,12 +362,15 @@ RUN(() => {
 		
 		// 화면 크기가 바뀌면 스크롤 맨 아래로
 		EVENT('resize', () => {
-			messageList.scrollTo({
-				top : 999999
+			DELAY(() => {
+				messageList.scrollTo({
+					top : 999999
+				});
 			});
 		});
 		
 		// 메시지 입력칸
+		let messageInput;
 		let fileInput;
 		let uploadButton;
 		FORM({
@@ -234,9 +381,13 @@ RUN(() => {
 				boxShadow : '0 0 0.4em rgba(0, 0, 0, 0.15)'
 			},
 			c : [
-			UUI.FULL_INPUT({
+			messageInput = UUI.FULL_INPUT({
 				style : {
+					backgroundColor : skinData.backgroundColor,
 					padding : 10
+				},
+				inputStyle : {
+					color : skinData.color
 				},
 				name : 'message',
 				placeholder : '메시지를 입력하세요.',
@@ -382,32 +533,8 @@ RUN(() => {
 					change : () => {
 						let file = fileInput.getEl().files[0];
 						
-						if (file.size !== undefined && file.size <= 20971520) {
-							
-							let fileId = UUID();
-							
-							let uploadTask = uploadsRef.child(fileId).put(file);
-							
-							uploadTask.on('state_changed', (snapshot) => {
-								uploadButton.empty();
-								uploadButton.append(INTEGER((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
-							}, () => {
-								uploadButton.empty();
-								uploadButton.append(FontAwesome.GetIcon('upload'));
-							}, () => {
-								uploadButton.empty();
-								uploadButton.append(FontAwesome.GetIcon('upload'));
-								
-								uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-									chatsRef.push({
-										userId : user.uid,
-										name : user.displayName,
-										fileId : fileId,
-										fileName : file.name,
-										downloadURL : downloadURL
-									});
-								});
-							});
+						if (file.size !== undefined && file.size <= MAX_FILE_SIZE) {
+							uploadFile(file);
 						}
 						
 						else {
@@ -460,11 +587,7 @@ RUN(() => {
 							let command = args[0];
 							args.shift();
 							
-							if (command === '명령어' || command === '도움말' || command === '?') {
-								addSystemMessage('명령어 : 닉네임, 로그아웃');
-							}
-							
-							else if (command === '닉네임') {
+							if (command === '닉네임') {
 								
 								let originName = user.displayName;
 								
@@ -485,8 +608,31 @@ RUN(() => {
 								}
 							}
 							
+							else if (command === '접속자') {
+								showRecentlyUsers();
+							}
+							
+							else if (command === '스킨') {
+								
+								if (args.length === 0) {
+									addSystemMessage('사용법 : /스킨 [skin], 스킨 종류 : 기본, 다크');
+								}
+								
+								else if (SKINS[args[0]] !== undefined) {
+									chatStore.save({
+										name : 'skin',
+										value : args[0]
+									});
+									location.reload();
+								}
+							}
+							
 							else if (command === '로그아웃') {
 								firebase.auth().signOut();
+							}
+							
+							else {
+								addSystemMessage('명령어 : 닉네임, 접속자, 스킨, 로그아웃');
 							}
 						}
 						
@@ -503,6 +649,8 @@ RUN(() => {
 			}
 		}).appendTo(BODY);
 		
+		messageInput.focus();
+		
 		// 1분에 한번씩 커넥션을 유지합니다.
 		INTERVAL(60, RAR(() => {
 			connectionsRef.child(user.uid).set({
@@ -511,37 +659,57 @@ RUN(() => {
 			});
 		}));
 		
-		// 최근 유저를 가져옵니다.
-		connectionsRef.once('value', (snapshot) => {
-			
-			let connections = [];
-			snapshot.forEach((childSnapshot) => {
-				connections.push(childSnapshot.val());
-			});
-			
-			let lastTime = 0;
-			connections.forEach((connection) => {
-				if (connection.time > lastTime) {
-					lastTime = connection.time;
-				}
-			});
-			
-			let names = '';
-			let recentConnections = [];
-			connections.forEach((connection) => {
-				// 마지막 접속자와 비교하여 2분 미만 내에 커넥션을 유지한 사용자만
-				if (lastTime - connection.time < 2 * 60 * 1000) {
-					recentConnections.push(connection);
+		showRecentlyUsers();
+		
+		// 붙여넣기로 업로드
+		EVENT('paste', (e) => {
+			EACH(e.getClipboardItems(), (item) => {
+				
+				if (item.type.indexOf('image') !== -1) {
 					
-					if (names !== '') {
-						names += ', ';
+					let file = item.getAsFile();
+					
+					if (file.size !== undefined && file.size <= MAX_FILE_SIZE) {
+						if (confirm('클립보드의 이미지를 업로드 하시겠습니까?') === true) {
+							uploadFile(file);
+						}
 					}
-					names += connection.name;
+					
+					else {
+						alert('제한 크기를 초과한 파일입니다.');
+					}
+					
+					e.stopDefault();
+					
+					return false;
+				}
+			});
+		});
+		
+		// 모바일 제외
+		if (INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS') {
+			
+			// 기본 드래그 앤 드롭 막기
+			EVENT('dragover', (e) => {
+				e.stop();
+			});
+			
+			// 미리보기 이동
+			EVENT('mousemove', (e) => {
+				if (preview !== undefined) {
+					preview.addStyle({
+						left : e.getLeft() + 10,
+						top : e.getTop() - preview.getHeight() - 8
+					});
 				}
 			});
 			
-			addSystemMessage('최근 유저(' + recentConnections.length + '명) : ' + names);
-		});
+			// 드래그 앤 드롭으로 업로드
+			EVENT('drop', (e) => {
+				EACH(e.getFiles(), uploadFile);
+				e.stopDefault();
+			});
+		}
 	};
 	
 	// 로그인 체크
