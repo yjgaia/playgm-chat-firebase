@@ -13,6 +13,15 @@ RUN(() => {
 		let chatSnapshots = [];
 		let iconMap = {};
 		
+		let loading = IMG({
+			style : {
+				position : 'fixed',
+				left : 5,
+				bottom : 40
+			},
+			src : 'resource/loading.gif'
+		}).appendTo(BODY);
+		
 		// 채팅 목록
 		let messageList = DIV({
 			style : {
@@ -20,7 +29,7 @@ RUN(() => {
 				overflowY : 'scroll',
 				onDisplayResize : (width, height) => {
 					return {
-						height : height - 45
+						height : height - 50
 					};
 				}
 			}
@@ -28,6 +37,7 @@ RUN(() => {
 		
 		// 새 메시지가 추가되면
 		chatsRef.on('child_added', (snapshot) => {
+			loading.remove();
 			
 			let isToScrollBottom = messageList.getScrollTop() >= messageList.getScrollHeight() - messageList.getHeight() - 10;
 			
@@ -38,58 +48,82 @@ RUN(() => {
 				data : chatData
 			});
 			
-			let icon;
-			messageList.append(DIV({
-				style : {
-					padding : '0 6px',
-					paddingBottom : 10
-				},
-				c : [icon = IMG({
+			// 카페 새 글 알림
+			if (chatData.isNewCafeArticle === true) {
+				messageList.append(DIV({
 					style : {
-						marginBottom : -5,
-						marginRight : 6,
-						width : 20,
-						height : 20,
-						borderRadius : 20
+						padding : '0 8px',
+						paddingBottom : 8,
+						color : '#080',
+						fontWeight : 'bold'
 					},
-					src : userIconURLs[chatData.userId] === undefined ? 'resource/default-icon.png' : userIconURLs[chatData.userId]
-				}), SPAN({
-					style : {
-						fontWeight : 'bolder',
-						marginRight : 6
-					},
-					c : chatData.name
-				}), SPAN({
-					style : {
-						fontSize : 0
-					},
-					c : ':'
-				}), chatData.downloadURL !== undefined ? A({
-					style : {
-						fontWeight : 'bolder',
-						textDecoration : 'underline'
-					},
-					c : chatData.fileName !== undefined ? chatData.fileName : chatData.downloadURL,
-					target : '_blank',
-					href : chatData.downloadURL
-				}) : chatData.message]
-			}));
-			
-			if (iconMap[chatData.userId] === undefined) {
-				iconMap[chatData.userId] = [];
+					c : ['새 글 알림! ', A({
+						style : {
+							textDecoration : 'underline'
+						},
+						target : '_blank',
+						href : 'http://cafe.naver.com/playgm/' + chatData.articleId,
+						c : chatData.title + ', by ' + chatData.nickname
+					})]
+				}));
 			}
-			iconMap[chatData.userId].push(icon);
 			
-			iconsRef.child(chatData.userId).getDownloadURL().then((url) => {
-				userIconURLs[chatData.userId] = url;
+			// 새 메시지
+			else {
 				
-				EACH(iconMap[chatData.userId], (icon) => {
-					icon.setSrc(url);
+				let icon;
+				messageList.append(DIV({
+					style : {
+						padding : '0 8px',
+						paddingBottom : 8
+					},
+					c : [icon = IMG({
+						style : {
+							marginBottom : -5,
+							marginRight : 5,
+							width : 20,
+							height : 20,
+							borderRadius : 20
+						},
+						src : userIconURLs[chatData.userId] === undefined ? 'resource/default-icon.png' : userIconURLs[chatData.userId]
+					}), SPAN({
+						style : {
+							fontWeight : 'bolder',
+							marginRight : 6
+						},
+						c : chatData.name
+					}), SPAN({
+						style : {
+							fontSize : 0
+						},
+						c : ' : '
+					}), chatData.downloadURL !== undefined ? A({
+						style : {
+							fontWeight : 'bolder',
+							textDecoration : 'underline'
+						},
+						c : chatData.fileName !== undefined ? chatData.fileName : chatData.downloadURL,
+						target : '_blank',
+						href : chatData.downloadURL
+					}) : chatData.message]
+				}));
+				
+				if (iconMap[chatData.userId] === undefined) {
+					iconMap[chatData.userId] = [];
+				}
+				iconMap[chatData.userId].push(icon);
+				
+				iconsRef.child(chatData.userId).getDownloadURL().then((url) => {
+					userIconURLs[chatData.userId] = url;
+					
+					EACH(iconMap[chatData.userId], (icon) => {
+						icon.setSrc(url);
+					});
+					
+				}).catch(() => {
+					// ignore.
 				});
-				
-			}).catch(() => {
-				// ignore.
-			});
+			}
 			
 			// 마지막 메시지를 보고있거나 자기가 쓴 글이라면 스크롤 맨 아래로
 			if (isToScrollBottom === true || chatData.userId === user.uid) {
@@ -109,6 +143,7 @@ RUN(() => {
 					if (fileId !== undefined) {
 						uploadsRef.child(fileId).delete();
 					}
+					
 					chatsRef.child(chatSnapshots[0].key).remove();
 					chatSnapshots.shift();
 				});
@@ -281,7 +316,7 @@ RUN(() => {
 					change : () => {
 						let file = fileInput.getEl().files[0];
 						
-						if (file.size !== undefined && file.size <= 10485760) {
+						if (file.size !== undefined && file.size <= 20971520) {
 							
 							let fileId = UUID();
 							
@@ -400,8 +435,8 @@ RUN(() => {
 			
 			messageList.append(DIV({
 				style : {
-					padding : '0 6px',
-					paddingBottom : 10,
+					padding : '0 8px',
+					paddingBottom : 8,
 					color : '#080',
 					fontWeight : 'bold'
 				},
