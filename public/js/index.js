@@ -679,6 +679,7 @@ RUN(() => {
 		
 		// 메시지 입력칸
 		let messageInput;
+		let semiMenu;
 		let fileInput;
 		let uploadButton;
 		FORM({
@@ -707,9 +708,20 @@ RUN(() => {
 							menuPanel = undefined;
 						}
 					},
+					keydown : (e) => {
+						if (e.getKey() === 'Escape') {
+							if (semiMenu !== undefined) {
+								semiMenu.remove();
+							}
+						}
+					},
 					doubletap : () => {
 						
-						let semiMenu = DIV({
+						if (semiMenu !== undefined) {
+							semiMenu.remove();
+						}
+						
+						semiMenu = DIV({
 							style : {
 								position : 'fixed',
 								left : 5,
@@ -733,7 +745,10 @@ RUN(() => {
 						}).appendTo(BODY);
 						
 						EVENT_ONCE('tap', () => {
-							semiMenu.remove();
+							if (semiMenu !== undefined) {
+								semiMenu.remove();
+								semiMenu = undefined;
+							}
 						});
 					}
 				}
