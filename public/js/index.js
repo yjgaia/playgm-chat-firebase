@@ -473,7 +473,7 @@ RUN(() => {
 							}
 							
 							// 이모티콘을 찾아 교체합니다.
-							let replaceEmoticon = () => {
+							let replaceEmoticon = (message) => {
 								
 								let match = message.match(/:[^:]*:/);
 								if (match === TO_DELETE) {
@@ -506,15 +506,15 @@ RUN(() => {
 											}
 										}));
 										
-										message = message.substring(index + emoticonStr.length);
-										
-										replaceEmoticon();
+										message = replaceEmoticon(message.substring(index + emoticonStr.length));
 									}
 									
 									else {
 										children.push(message);
 									}
 								}
+								
+								return message;
 							};
 							
 							// 링크를 찾아 교체합니다.
@@ -522,7 +522,7 @@ RUN(() => {
 								
 								let match = message.match(URL_REGEX);
 								if (match === TO_DELETE) {
-									replaceEmoticon(message);
+									message = replaceEmoticon(message);
 								}
 								
 								else {
@@ -534,7 +534,7 @@ RUN(() => {
 									
 									let index = message.indexOf(url);
 									
-									replaceEmoticon(message.substring(0, index));
+									message = replaceEmoticon(message.substring(0, index));
 									
 									children.push(A({
 										style : {
