@@ -29,6 +29,8 @@ RUN(() => {
 			Notification.requestPermission();
 		}
 		
+		let menuPanel;
+		
 		// 메뉴 버튼
 		A({
 			style : {
@@ -41,8 +43,12 @@ RUN(() => {
 			on : {
 				tap : () => {
 					
+					if (menuPanel !== undefined) {
+						menuPanel.remove();
+					}
+					
 					// 메뉴 열기
-					let menu = UUI.PANEL({
+					menuPanel = UUI.PANEL({
 						style : {
 							position : 'fixed',
 							right : 0,
@@ -66,7 +72,8 @@ RUN(() => {
 							c : FontAwesome.GetIcon('times'),
 							on : {
 								tap : () => {
-									menu.remove();
+									menuPanel.remove();
+									menuPanel = undefined;
 								}
 							}
 						}),
@@ -665,7 +672,15 @@ RUN(() => {
 				},
 				name : 'message',
 				placeholder : '메시지를 입력하세요.',
-				isOffAutocomplete : true
+				isOffAutocomplete : true,
+				on : {
+					tap : () => {
+						if (menuPanel !== undefined) {
+							menuPanel.remove();
+							menuPanel = undefined;
+						}
+					}
+				}
 			}),
 			
 			// 설정 버튼
