@@ -274,6 +274,14 @@ RUN(() => {
 						height : height - 50
 					};
 				}
+			},
+			on : {
+				tap : () => {
+					if (menuPanel !== undefined) {
+						menuPanel.remove();
+						menuPanel = undefined;
+					}
+				}
 			}
 		}).appendTo(BODY);
 		
