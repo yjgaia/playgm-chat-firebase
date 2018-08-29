@@ -128,20 +128,19 @@ RUN(() => {
 								borderRadius : 5
 							},
 							target : '_blank',
-							href : 'https://github.com/Hanul/playgm-chat',
+							href : 'http://code.playgm.co.kr',
 							c : UUI.BUTTON_H({
 								style : {
 									margin : 'auto'
 								},
-								icon : FontAwesome.GetBrandIcon({
+								icon : FontAwesome.GetIcon({
 									style : {
-										marginTop : 1,
-										width : 14
+										marginTop : 2
 									},
-									key : 'github'
+									key : 'code'
 								}),
 								spacing : 10,
-								title : '소스코드'
+								title : '코드 프금'
 							}),
 							on : {
 								mouseover : (e, button) => {
@@ -181,6 +180,46 @@ RUN(() => {
 								}),
 								spacing : 10,
 								title : 'PlayGM 카페'
+							}),
+							on : {
+								mouseover : (e, button) => {
+									button.addStyle({
+										backgroundColor : '#fff',
+										color : '#000'
+									});
+								},
+								mouseout : (e, button) => {
+									button.addStyle({
+										backgroundColor : 'transparent',
+										color : '#fff'
+									});
+								}
+							}
+						}),
+						
+						A({
+							style : {
+								marginTop : 10,
+								display : 'block',
+								padding : 10,
+								border : '1px solid #fff',
+								borderRadius : 5
+							},
+							target : '_blank',
+							href : 'https://github.com/Hanul/playgm-chat',
+							c : UUI.BUTTON_H({
+								style : {
+									margin : 'auto'
+								},
+								icon : FontAwesome.GetBrandIcon({
+									style : {
+										marginTop : 1,
+										width : 14
+									},
+									key : 'github'
+								}),
+								spacing : 10,
+								title : '소스코드'
 							}),
 							on : {
 								mouseover : (e, button) => {
