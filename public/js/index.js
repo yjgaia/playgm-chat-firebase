@@ -418,8 +418,10 @@ RUN(() => {
 						}
 					}) : RUN(() => {
 						
+						let message = chatData.message;
+						
 						// 호출 기능
-						if (chatData.isCalled !== true && chatData.name !== user.displayName && (chatData.message + ' ').indexOf('@' + user.displayName + ' ') !== -1) {
+						if (chatData.isCalled !== true && chatData.name !== user.displayName && (message + ' ').indexOf('@' + user.displayName + ' ') !== -1) {
 							
 							// 아이폰은 지원 안함
 							if (global.Notification === undefined || Notification.permission !== 'granted') {
@@ -434,7 +436,7 @@ RUN(() => {
 							
 							else if (document.hasFocus() !== true) {
 								new Notification(chatData.name, {
-									body : chatData.message,
+									body : message,
 								}).onclick = () => {
 									focus();
 								};
@@ -448,17 +450,55 @@ RUN(() => {
 						
 						let children = [];
 						
-						EACH(chatData.message.split(' '), (message, i) => {
+						EACH(message.split(' '), (message, i) => {
+							
 							if (i > 0) {
 								children.push(' ');
 							}
+							
+							// 이모티콘을 찾아 교체합니다.
+							let replaceEmoticon = () => {
+								
+								let match = message.match(/:[^:]*:/);
+								if (match === TO_DELETE) {
+									children.push(message);
+								}
+								
+								else {
+									
+									let emoticonStr = match[0];
+									let emoticon = emoticonStr.substring(1, emoticonStr.length - 1);
+									
+									if (CHECK_IS_IN({
+										array : EMOTICONS,
+										value : emoticon
+									}) === true) {
+										
+										let index = message.indexOf(emoticonStr);
+										
+										children.push(message.substring(0, index));
+										
+										children.push(IMG({
+											src : 'resource/emoticon/' + emoticon + '.png'
+										}));
+										
+										message = message.substring(index + emoticonStr.length);
+										
+										replaceEmoticon();
+									}
+									
+									else {
+										children.push(message);
+									}
+								}
+							};
 							
 							// 링크를 찾아 교체합니다.
 							let replaceLink = () => {
 								
 								let match = message.match(URL_REGEX);
 								if (match === TO_DELETE) {
-									children.push(message);
+									replaceEmoticon(message);
 								}
 								
 								else {
@@ -470,7 +510,8 @@ RUN(() => {
 									
 									let index = message.indexOf(url);
 									
-									children.push(message.substring(0, index));
+									replaceEmoticon(message.substring(0, index));
+									
 									children.push(A({
 										style : {
 											textDecoration : 'underline'
@@ -485,6 +526,7 @@ RUN(() => {
 									replaceLink();
 								}
 							};
+							
 							replaceLink();
 						});
 						

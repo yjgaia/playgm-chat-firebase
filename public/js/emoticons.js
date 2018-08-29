@@ -1,0 +1,1 @@
+global.EMOTICONS = ['와샌즈'];
