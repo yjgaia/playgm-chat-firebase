@@ -706,6 +706,35 @@ RUN(() => {
 							menuPanel.remove();
 							menuPanel = undefined;
 						}
+					},
+					doubletap : () => {
+						
+						let semiMenu = DIV({
+							style : {
+								position : 'fixed',
+								left : 5,
+								bottom : 43
+							},
+							c : [A({
+								style : {
+									flt : 'left',
+									padding : '4px 8px',
+									border : '1px solid #999',
+									backgroundColor : '#eee',
+									borderRadius : 3
+								},
+								c : '접속자',
+								on : {
+									tap : () => {
+										showRecentlyUsers();
+									}
+								}
+							}), CLEAR_BOTH()]
+						}).appendTo(BODY);
+						
+						EVENT_ONCE('tap', () => {
+							semiMenu.remove();
+						});
 					}
 				}
 			}),
