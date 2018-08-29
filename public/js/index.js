@@ -605,6 +605,11 @@ RUN(() => {
 									let index = message.indexOf(url);
 									
 									message = replaceEmoticon(message.substring(0, index));
+									message = message.substring(index + url.length);
+									
+									if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0 && url.indexOf('ftp://') !== 0) {
+										url = 'http://' + url;
+									}
 									
 									children.push(A({
 										style : {
@@ -614,8 +619,6 @@ RUN(() => {
 										href : url,
 										c : url
 									}));
-									
-									message = message.substring(index + url.length);
 									
 									replaceLink();
 								}
