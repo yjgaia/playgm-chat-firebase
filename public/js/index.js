@@ -335,14 +335,26 @@ RUN(() => {
 			});
 			
 			// 카페 새 글 알림
-			if (chatData.isNewCafeArticle === true) {
-				addSystemMessage(['새 글 알림! ', A({
+			if (chatData.isNewCafeArticle === true || chatData.isNewCafeArticle === 'true') {
+				addSystemMessage(['카페 새 글! ', A({
 					style : {
 						textDecoration : 'underline'
 					},
 					target : '_blank',
 					href : 'http://cafe.naver.com/playgm/' + chatData.articleId,
 					c : chatData.title + ', by ' + chatData.nickname
+				})], false);
+			}
+			
+			// 유게짱 새 글 알림
+			else if (chatData.isNewUGZArticle === true || chatData.isNewUGZArticle === 'true') {
+				addSystemMessage(['새 유게짱! ', A({
+					style : {
+						textDecoration : 'underline'
+					},
+					target : '_blank',
+					href : chatData.link,
+					c : chatData.title + ', by 굿군'
 				})], false);
 			}
 			
