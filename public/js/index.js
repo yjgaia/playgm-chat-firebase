@@ -231,6 +231,12 @@ RUN(() => {
 			}
 		}).appendTo(BODY);
 		
+		let scrollToEnd = () => {
+			messageList.scrollTo({
+				top : 999999
+			});
+		};
+		
 		// 시스템 메시지 추가
 		let addSystemMessage = (message, scroll) => {
 			
@@ -245,15 +251,13 @@ RUN(() => {
 			}));
 			
 			if (scroll !== false) {
-				messageList.scrollTo({
-					top : 999999
-				});
+				scrollToEnd();
 			}
 		};
 		
 		// 도움말 추가
 		let addHelpMessage = () => {
-			addSystemMessage('명령어 : /명령어, /닉네임, /접속자, /스킨, /로그아웃');
+			addSystemMessage('명령어 : /명령어, /닉네임, /접속자, /스킨, /이모티콘, /로그아웃');
 		};
 		
 		let showRecentlyUsers = () => {
@@ -479,7 +483,15 @@ RUN(() => {
 										children.push(message.substring(0, index));
 										
 										children.push(IMG({
-											src : 'resource/emoticon/' + emoticon + '.png'
+											src : 'resource/emoticon/' + emoticon + '.png',
+											on : {
+												load : () => {
+													// 로딩이 다 되면 스크롤 끝으로
+													if (isToScrollBottom === true || chatData.userId === user.uid) {
+														scrollToEnd();
+													}
+												}
+											}
 										}));
 										
 										message = message.substring(index + emoticonStr.length);
@@ -555,9 +567,7 @@ RUN(() => {
 			
 			// 마지막 메시지를 보고있거나 자기가 쓴 글이라면 스크롤 맨 아래로
 			if (isToScrollBottom === true || chatData.userId === user.uid) {
-				messageList.scrollTo({
-					top : 999999
-				});
+				scrollToEnd();
 			}
 			
 			// 오래된 메시지 삭제
@@ -578,9 +588,7 @@ RUN(() => {
 		// 화면 크기가 바뀌면 스크롤 맨 아래로
 		EVENT('resize', () => {
 			DELAY(() => {
-				messageList.scrollTo({
-					top : 999999
-				});
+				scrollToEnd();
 			});
 		});
 		
@@ -785,8 +793,7 @@ RUN(() => {
 						fileInput.select();
 					}
 				}
-			})
-			],
+			})],
 			on : {
 				submit : (e, form) => {
 					
@@ -840,6 +847,17 @@ RUN(() => {
 									});
 									location.reload();
 								}
+							}
+							
+							else if (command === '이모티콘') {
+								let emoticonStr = '';
+								EACH(EMOTICONS, (emoticon, i) => {
+									if (i > 0) {
+										emoticonStr += ', ';
+									}
+									emoticonStr += emoticon;
+								});
+								addSystemMessage('이모티콘 사용법 : 메시지 중간에 :이모티콘:과 같은 형태로 사용, 이모티콘 종류 : ' + emoticonStr);
 							}
 							
 							else if (command === '로그아웃') {
