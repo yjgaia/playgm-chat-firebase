@@ -14,7 +14,7 @@
       "**/node_modules/**"
     ],
     "headers": [{
-    	"source": "/**",
+    	"source": "/js/**",
     	"headers": [{
 	    	"key" : "Cache-Control",
 	    	"value" : "no-cache, no-store, must-revalidate"

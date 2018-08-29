@@ -311,7 +311,7 @@ RUN(() => {
 		
 		// 도움말 추가
 		let addHelpMessage = () => {
-			addSystemMessage('명령어 : /명령어, /닉네임, /접속자, /스킨, /이모티콘, /로그아웃');
+			addSystemMessage('명령어 : /명령어, /닉네임, /접속자, /스킨, /이모티콘, /프금, /로그아웃');
 		};
 		
 		let showRecentlyUsers = () => {
@@ -463,20 +463,36 @@ RUN(() => {
 								INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS' &&
 								preview === undefined && chatData.isImage === true) {
 									
-									preview = DIV({
+									preview = UUI.V_CENTER({
 										style : {
 											position : 'fixed',
 											left : e.getLeft() + 10,
 											top : e.getTop() - 42 - 8,
-											width : 60,
-											height : 40,
-											backgroundColor : '#eee',
+											width : 90,
+											height : 60,
+											backgroundColor : '#fff',
 											backgroundImage : chatData.downloadURL,
 											backgroundSize : 'cover',
 											backgroundPosition : 'center center',
-											border : '1px solid #333'
-										}
+											border : '1px solid #333',
+											textAlign : 'center'
+										},
+										c : IMG({
+											style : {
+												marginTop : 5
+											},
+											src : 'resource/loading.gif'
+										})
 									}).appendTo(BODY);
+									
+									IMG({
+										src : chatData.downloadURL,
+										on : {
+											load : () => {
+												preview.empty();
+											}
+										}
+									});
 								}
 							},
 							mouseout : () => {
@@ -871,7 +887,7 @@ RUN(() => {
 			on : {
 				submit : (e, form) => {
 					
-					let message = form.getData().message.trim();
+					let message = form.getData().message;
 					form.setData({});
 					
 					if (message !== '') {
@@ -938,6 +954,10 @@ RUN(() => {
 								firebase.auth().signOut();
 							}
 							
+							else if (command === '프금') {
+								open('https://cafe.naver.com/playgm');
+							}
+							
 							else {
 								addHelpMessage();
 							}
@@ -948,7 +968,7 @@ RUN(() => {
 							chatsRef.push({
 								userId : user.uid,
 								name : user.displayName,
-								message : message
+								message : message.trim()
 							});
 						}
 					}
