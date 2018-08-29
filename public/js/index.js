@@ -24,8 +24,8 @@ RUN(() => {
 	
 	let startService = () => {
 		
-		// 호출 허락
-		if (Notification.permission !== 'granted') {
+		// 호출 허락 (아이폰은 지원안함)
+		if (global.Notification !== undefined && Notification.permission !== 'granted') {
 			Notification.requestPermission();
 		}
 		
@@ -50,7 +50,8 @@ RUN(() => {
 							width : 260,
 							height : '100%',
 							backgroundColor : '#444',
-							color : '#fff'
+							color : '#fff',
+							overflowY : 'scroll'
 						},
 						contentStyle : {
 							padding : 20
@@ -58,7 +59,7 @@ RUN(() => {
 						c : [A({
 							style : {
 								position : 'fixed',
-								right : 0,
+								right : INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS' ? 18 : 0,
 								top : 0,
 								padding : 10
 							},
@@ -72,13 +73,129 @@ RUN(() => {
 						
 						H3({
 							style : {
-								fontSize : 30
+								fontSize : 30,
+								fontWeight : 'bold'
 							},
 							c : 'MENU'
 						}),
 						
-						P({
-							c : '준비중입니다.'
+						A({
+							style : {
+								marginTop : 10,
+								display : 'block',
+								padding : 10,
+								border : '1px solid #fff',
+								borderRadius : 5
+							},
+							c : UUI.BUTTON_H({
+								style : {
+									margin : 'auto'
+								},
+								icon : FontAwesome.GetIcon({
+									style : {
+										marginTop : 2
+									},
+									key : 'info-circle'
+								}),
+								spacing : 10,
+								title : '명령어'
+							}),
+							on : {
+								mouseover : (e, button) => {
+									button.addStyle({
+										backgroundColor : '#fff',
+										color : '#000'
+									});
+								},
+								mouseout : (e, button) => {
+									button.addStyle({
+										backgroundColor : 'transparent',
+										color : '#fff'
+									});
+								},
+								tap : () => {
+									addHelpMessage();
+								}
+							}
+						}),
+						
+						A({
+							style : {
+								marginTop : 10,
+								display : 'block',
+								padding : 10,
+								border : '1px solid #fff',
+								borderRadius : 5
+							},
+							target : '_blank',
+							href : 'https://github.com/Hanul/playgm-chat',
+							c : UUI.BUTTON_H({
+								style : {
+									margin : 'auto'
+								},
+								icon : FontAwesome.GetBrandIcon({
+									style : {
+										marginTop : 1,
+										width : 14
+									},
+									key : 'github'
+								}),
+								spacing : 10,
+								title : '소스코드'
+							}),
+							on : {
+								mouseover : (e, button) => {
+									button.addStyle({
+										backgroundColor : '#fff',
+										color : '#000'
+									});
+								},
+								mouseout : (e, button) => {
+									button.addStyle({
+										backgroundColor : 'transparent',
+										color : '#fff'
+									});
+								}
+							}
+						}),
+						
+						A({
+							style : {
+								marginTop : 10,
+								display : 'block',
+								padding : 10,
+								border : '1px solid #fff',
+								borderRadius : 5
+							},
+							target : '_blank',
+							href : 'https://cafe.naver.com/playgm',
+							c : UUI.BUTTON_H({
+								style : {
+									margin : 'auto'
+								},
+								icon : FontAwesome.GetIcon({
+									style : {
+										marginTop : 2
+									},
+									key : 'coffee'
+								}),
+								spacing : 10,
+								title : 'PlayGM 카페'
+							}),
+							on : {
+								mouseover : (e, button) => {
+									button.addStyle({
+										backgroundColor : '#fff',
+										color : '#000'
+									});
+								},
+								mouseout : (e, button) => {
+									button.addStyle({
+										backgroundColor : 'transparent',
+										color : '#fff'
+									});
+								}
+							}
 						})]
 					}).appendTo(BODY);
 				}
@@ -132,6 +249,11 @@ RUN(() => {
 					top : 999999
 				});
 			}
+		};
+		
+		// 도움말 추가
+		let addHelpMessage = () => {
+			addSystemMessage('명령어 : /명령어, /닉네임, /접속자, /스킨, /로그아웃');
 		};
 		
 		let showRecentlyUsers = () => {
@@ -221,7 +343,7 @@ RUN(() => {
 			}
 			
 			// 닉변 알림
-			if (chatData.isNameChanged === true) {
+			else if (chatData.isNameChanged === true) {
 				addSystemMessage('닉네임 변경 : ' + chatData.originName + ' -> ' + chatData.newName);
 			}
 			
@@ -299,7 +421,8 @@ RUN(() => {
 						// 호출 기능
 						if (chatData.isCalled !== true && chatData.name !== user.displayName && (chatData.message + ' ').indexOf('@' + user.displayName + ' ') !== -1) {
 							
-							if (Notification.permission !== 'granted') {
+							// 아이폰은 지원 안함
+							if (global.Notification === undefined || Notification.permission !== 'granted') {
 								DELAY(() => {
 									chatsRef.push({
 										userId : user.uid,
@@ -682,7 +805,7 @@ RUN(() => {
 							}
 							
 							else {
-								addSystemMessage('명령어 : 닉네임, 접속자, 스킨, 로그아웃');
+								addHelpMessage();
 							}
 						}
 						
