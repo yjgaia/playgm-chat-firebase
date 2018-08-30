@@ -1,1 +1,1 @@
-global.EMOTICONS = ['와샌즈', '와파피루스', '기모띠'];
+global.EMOTICONS = ['와샌즈', '와파피루스', '기모띠', 'ppap'];
