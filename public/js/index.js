@@ -460,11 +460,25 @@ RUN(() => {
 					},
 					c : [icon = IMG({
 						style : {
-							marginBottom : -5,
 							marginRight : 5,
-							width : 20,
-							height : 20,
-							borderRadius : 20
+							onDisplayResize : (width, height) => {
+								// 모바일
+								if (width < 800) {
+									return {
+										marginBottom : -4,
+										width : 18,
+										height : 18,
+										borderRadius : 18
+									};
+								} else {
+									return {
+										marginBottom : -5,
+										width : 20,
+										height : 20,
+										borderRadius : 20
+									};
+								}
+							}
 						},
 						src : userIconURLs[chatData.userId] === undefined ? 'resource/default-icon.png' : userIconURLs[chatData.userId]
 					}), SPAN({
