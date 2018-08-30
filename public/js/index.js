@@ -37,7 +37,8 @@ RUN(() => {
 				position : 'fixed',
 				right : INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS' ? 18 : 0,
 				top : 0,
-				padding : 10
+				padding : 10,
+				zIndex : 998
 			},
 			c : FontAwesome.GetIcon('bars'),
 			on : {
@@ -57,7 +58,8 @@ RUN(() => {
 							height : '100%',
 							backgroundColor : '#444',
 							color : '#fff',
-							overflowY : 'scroll'
+							overflowY : 'scroll',
+							zIndex : 999
 						},
 						contentStyle : {
 							padding : 20
@@ -260,6 +262,10 @@ RUN(() => {
 			},
 			src : 'resource/loading.gif'
 		}).appendTo(BODY);
+		
+		BODY.addStyle({
+			overflowY : 'hidden'
+		});
 		
 		// 채팅 목록
 		let messageList = DIV({
