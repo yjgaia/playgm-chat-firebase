@@ -599,7 +599,7 @@ RUN(() => {
 								else {
 									
 									let emoticonStr = match[0];
-									let emoticon = emoticonStr.substring(1, emoticonStr.length - 1);
+									let emoticon = emoticonStr.substring(1, emoticonStr.length - 1).toLowerCase();
 									
 									if (CHECK_IS_IN({
 										array : EMOTICONS,
@@ -611,6 +611,9 @@ RUN(() => {
 										children.push(message.substring(0, index));
 										
 										children.push(IMG({
+											style : {
+												marginBottom : -4
+											},
 											src : 'resource/emoticon/' + emoticon + '.png',
 											on : {
 												load : () => {
