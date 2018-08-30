@@ -267,12 +267,20 @@ RUN(() => {
 				backgroundColor : skinData.backgroundColor,
 				color : skinData.color,
 				paddingTop : 10,
-				paddingBottom : 5,
 				overflowY : 'scroll',
 				onDisplayResize : (width, height) => {
-					return {
-						height : height - 50
-					};
+					// 모바일
+					if (width < 800) {
+						return {
+							fontSize : 14,
+							height : height - 50
+						};
+					} else {
+						return {
+							fontSize : 'inherit',
+							height : height - 50
+						};
+					}
 				}
 			},
 			on : {
@@ -296,10 +304,22 @@ RUN(() => {
 			
 			messageList.append(DIV({
 				style : {
-					padding : '0 8px',
-					paddingBottom : 8,
 					color : '#080',
-					fontWeight : 'bold'
+					fontWeight : 'bold',
+					onDisplayResize : (width, height) => {
+						// 모바일
+						if (width < 800) {
+							return {
+								padding : '0 6px',
+								paddingBottom : 6
+							};
+						} else {
+							return {
+								padding : '0 8px',
+								paddingBottom : 8
+							};
+						}
+					}
 				},
 				c : message
 			}));
@@ -423,8 +443,20 @@ RUN(() => {
 				let icon;
 				messageList.append(DIV({
 					style : {
-						padding : '0 8px',
-						paddingBottom : 8
+						onDisplayResize : (width, height) => {
+							// 모바일
+							if (width < 800) {
+								return {
+									padding : '0 6px',
+									paddingBottom : 6
+								};
+							} else {
+								return {
+									padding : '0 8px',
+									paddingBottom : 8
+								};
+							}
+						}
 					},
 					c : [icon = IMG({
 						style : {
