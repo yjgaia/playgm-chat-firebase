@@ -299,6 +299,13 @@ RUN(() => {
 			}
 		}).appendTo(BODY);
 		
+		let padding = DIV({
+			style : {
+				backgroundColor : skinData.backgroundColor,
+				height : 10
+			}
+		}).appendTo(BODY);
+		
 		let scrollToEnd = () => {
 			messageList.scrollTo({
 				top : 999999
@@ -310,7 +317,7 @@ RUN(() => {
 			
 			messageList.append(DIV({
 				style : {
-					color : '#080',
+					color : skinData.systemColor,
 					fontWeight : 'bold',
 					onDisplayResize : (width, height) => {
 						// 모바일
@@ -1029,7 +1036,14 @@ RUN(() => {
 							else if (command === '스킨') {
 								
 								if (args.length === 0) {
-									addSystemMessage('사용법 : /스킨 [skin], 스킨 종류 : 기본, 다크');
+									let skinStr = '';
+									EACH(SKINS, (skinData, skin) => {
+										if (skinStr !== '') {
+											skinStr += ', ';
+										}
+										skinStr += skin;
+									});
+									addSystemMessage('사용법 : /스킨 [skin], 스킨 종류 : ' + skinStr);
 								}
 								
 								else if (SKINS[args[0]] !== undefined) {
