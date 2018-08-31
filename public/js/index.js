@@ -216,7 +216,7 @@ RUN(() => {
 								borderRadius : 5
 							},
 							target : '_blank',
-							href : 'https://github.com/Hanul/playgm-chat',
+							href : 'https://github.com/Hanul/playgm-chat-firebase',
 							c : UUI.BUTTON_H({
 								style : {
 									margin : 'auto'
