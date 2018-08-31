@@ -40,7 +40,7 @@ input, textarea, select {
 	-webkit-tap-highlight-color: transparent;
 }
 html, body {
-	background-color: white;
+	background-color: #000;
 	color: #444;
 	word-wrap: break-word;
 	font-family: '나눔고딕', 'Malgun Gothic', sans-serif;

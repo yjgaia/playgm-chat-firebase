@@ -38,7 +38,8 @@ RUN(() => {
 				right : INFO.getOSName() !== 'Android' && INFO.getOSName() !== 'iOS' ? 18 : 0,
 				top : 0,
 				padding : 10,
-				zIndex : 998
+				zIndex : 998,
+				color : skinData.color
 			},
 			c : FontAwesome.GetIcon('bars'),
 			on : {
