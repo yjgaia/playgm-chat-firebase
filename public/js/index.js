@@ -245,6 +245,61 @@ RUN(() => {
 									});
 								}
 							}
+						}),
+						
+						A({
+							style : {
+								marginTop : 10,
+								display : 'block',
+								padding : 10,
+								border : '1px solid #fff',
+								borderRadius : 5
+							},
+							target : '_blank',
+							href : 'https://discordapp.com/channels/483554399243730959',
+							c : UUI.BUTTON_H({
+								style : {
+									margin : 'auto'
+								},
+								icon : FontAwesome.GetBrandIcon({
+									style : {
+										marginTop : 1,
+										width : 14
+									},
+									key : 'discord'
+								}),
+								spacing : 10,
+								title : 'PlayGM 디스코드'
+							}),
+							on : {
+								mouseover : (e, button) => {
+									button.addStyle({
+										backgroundColor : '#fff',
+										color : '#000'
+									});
+								},
+								mouseout : (e, button) => {
+									button.addStyle({
+										backgroundColor : 'transparent',
+										color : '#fff'
+									});
+								}
+							}
+						}),
+						
+						P({
+							style : {
+								marginTop : 15,
+								fontSize : 12
+							},
+							c : ['프금챗이 2018년 8월 31일부로 디스코드로 이전하였습니다. ', A({
+								style : {
+									textDecoration : 'underline'
+								},
+								target : '_blank',
+								href : 'https://discordapp.com/channels/483554399243730959',
+								c : 'PlayGM 디스코드'
+							}), '에 접속해주시기 바랍니다.']
 						})]
 					}).appendTo(BODY);
 				}
@@ -348,7 +403,7 @@ RUN(() => {
 			addSystemMessage('명령어 : /명령어, /닉네임, /접속자, /스킨, /이모티콘, /프금, /로그아웃');
 		};
 		
-		let showRecentlyUsers = () => {
+		let showRecentlyUsers = (isFirst) => {
 			
 			// 최근 유저를 가져옵니다.
 			connectionsRef.once('value', (snapshot) => {
@@ -380,6 +435,17 @@ RUN(() => {
 				});
 				
 				addSystemMessage('최근 유저(' + recentConnections.length + '명) : ' + names);
+				
+				if (isFirst === true) {
+					addSystemMessage(['프금챗이 2018년 8월 31일부로 디스코드로 이전하였습니다. ', A({
+						style : {
+							textDecoration : 'underline'
+						},
+						target : '_blank',
+						href : 'https://discordapp.com/channels/483554399243730959',
+						c : 'PlayGM 디스코드'
+					}), '에 접속해주시기 바랍니다.']);
+				}
 			});
 		};
 		
@@ -1103,7 +1169,7 @@ RUN(() => {
 			});
 		}));
 		
-		showRecentlyUsers();
+		showRecentlyUsers(true);
 		
 		// 붙여넣기로 업로드
 		EVENT('paste', (e) => {
