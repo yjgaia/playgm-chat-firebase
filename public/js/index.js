@@ -9,6 +9,7 @@ RUN(() => {
 	let uploadsRef = firebase.storage().ref('uploads');
 	
 	let user;
+	let userIconURL;
 	let userIconURLs = {};
 	
 	let chatStore = STORE('PlayGMChat');
@@ -467,6 +468,7 @@ RUN(() => {
 					chatsRef.push({
 						userId : user.uid,
 						name : user.displayName,
+						userIconURL : userIconURL,
 						fileName : file.name,
 						downloadURL : downloadURL,
 						isImage : file.type.indexOf('image') !== -1
@@ -560,7 +562,9 @@ RUN(() => {
 								}
 							}
 						},
-						src : userIconURLs[chatData.userId] === undefined ? 'resource/default-icon.png' : userIconURLs[chatData.userId]
+						src : userIconURLs[chatData.userId] === undefined ? (
+							chatData.userIconURL === undefined ? 'resource/default-icon.png' : chatData.userIconURL
+						) : userIconURLs[chatData.userId]
 					}), SPAN({
 						style : {
 							fontWeight : 'bolder',
@@ -641,6 +645,7 @@ RUN(() => {
 									chatsRef.push({
 										userId : user.uid,
 										name : user.displayName,
+										userIconURL : userIconURL,
 										message : '(호출 기능이 차단된 유저입니다)'
 									});
 								});
@@ -1151,6 +1156,7 @@ RUN(() => {
 							chatsRef.push({
 								userId : user.uid,
 								name : user.displayName,
+								userIconURL : userIconURL,
 								message : message.trim()
 							});
 						}
@@ -1220,6 +1226,20 @@ RUN(() => {
 				e.stopDefault();
 			});
 		}
+		
+		iconsRef.child(user.uid).getDownloadURL().then((url) => {
+			
+			userIconURL = url;
+			
+			userIconURLs[user.uid] = url;
+			
+			EACH(iconMap[user.uid], (icon) => {
+				icon.setSrc(url);
+			});
+			
+		}).catch(() => {
+			// ignore.
+		});
 	};
 	
 	// 로그인 체크
