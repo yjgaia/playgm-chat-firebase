@@ -317,7 +317,7 @@ RUN(() => {
 				left : 5,
 				bottom : 40
 			},
-			src : 'resource/loading.gif'
+			src : 'resource/loading.svg'
 		}).appendTo(BODY);
 		
 		BODY.addStyle({
@@ -543,6 +543,7 @@ RUN(() => {
 					c : [icon = IMG({
 						style : {
 							marginRight : 5,
+							backgroundColor : '#fff',
 							onDisplayResize : (width, height) => {
 								// 모바일
 								if (width < 800) {
@@ -611,7 +612,7 @@ RUN(() => {
 											style : {
 												marginTop : 5
 											},
-											src : 'resource/loading.gif'
+											src : 'resource/loading.svg'
 										})
 									}).appendTo(BODY);
 									

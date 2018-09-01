@@ -5,6 +5,10 @@
 			".read": "auth != null",
 			".write": "auth != null"
 		},
+		"connections-discord": {
+			".read": "auth != null",
+			".write": "auth != null"
+		},
 		"chats": {
 			".read": "auth != null",
 			".write": "auth != null"
