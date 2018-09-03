@@ -452,7 +452,9 @@ RUN(() => {
 		
 		let uploadFile = (file) => {
 			
-			let uploadTask = uploadsRef.child(file.name).put(file);
+			let fileId = UUID();
+			
+			let uploadTask = uploadsRef.child(fileId).child(file.name).put(file);
 			
 			uploadTask.on('state_changed', (snapshot) => {
 				uploadButton.empty();
@@ -469,6 +471,7 @@ RUN(() => {
 						userId : user.uid,
 						name : user.displayName,
 						userIconURL : userIconURL,
+						fileId : fileId,
 						fileName : file.name,
 						downloadURL : downloadURL,
 						isImage : file.type.indexOf('image') !== -1
@@ -620,7 +623,9 @@ RUN(() => {
 										src : chatData.downloadURL,
 										on : {
 											load : () => {
-												preview.empty();
+												if (preview !== undefined) {
+													preview.empty();
+												}
 											}
 										}
 									});
@@ -742,10 +747,6 @@ RUN(() => {
 									message = replaceEmoticon(message.substring(0, index));
 									message = message.substring(index + url.length);
 									
-									if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0 && url.indexOf('ftp://') !== 0) {
-										url = 'http://' + url;
-									}
-									
 									children.push(A({
 										style : {
 											textDecoration : 'underline'
@@ -793,11 +794,11 @@ RUN(() => {
 			// 오래된 메시지 삭제
 			if (chatSnapshots.length > 100) {
 				
-				let fileName = chatSnapshots[0].data.fileName;
+				let fileId = chatSnapshots[0].data.fileId;
 				
 				// 파일 업로드인 경우 업로드 파일도 삭제합니다.
-				if (fileName !== undefined) {
-					uploadsRef.child(fileName).delete();
+				if (fileId !== undefined) {
+					uploadsRef.child(fileId).delete();
 				}
 				
 				chatsRef.child(chatSnapshots[0].key).remove();
