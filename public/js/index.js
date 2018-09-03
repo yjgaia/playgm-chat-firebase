@@ -333,7 +333,7 @@ RUN(() => {
 				overflowY : 'scroll',
 				onDisplayResize : (width, height) => {
 					// 모바일
-					if (width < 800) {
+					if (width <= 1280) {
 						return {
 							fontSize : 14,
 							height : height - 50
@@ -378,7 +378,7 @@ RUN(() => {
 					fontWeight : 'bold',
 					onDisplayResize : (width, height) => {
 						// 모바일
-						if (width < 800) {
+						if (width <= 1280) {
 							return {
 								padding : '0 6px',
 								paddingBottom : 6
@@ -530,7 +530,7 @@ RUN(() => {
 					style : {
 						onDisplayResize : (width, height) => {
 							// 모바일
-							if (width < 800) {
+							if (width <= 1280) {
 								return {
 									padding : '0 6px',
 									paddingBottom : 6
@@ -549,7 +549,7 @@ RUN(() => {
 							backgroundColor : '#fff',
 							onDisplayResize : (width, height) => {
 								// 모바일
-								if (width < 800) {
+								if (width <= 1280) {
 									return {
 										marginBottom : -4,
 										width : 18,
