@@ -9,7 +9,7 @@ RUN(() => {
 	let uploadsRef = firebase.storage().ref('uploads');
 	
 	let user;
-	let userIconURL;
+	let userIconURL = 'resource/default-icon.png';
 	let userIconURLs = {};
 	
 	let chatStore = STORE('PlayGMChat');
@@ -462,11 +462,18 @@ RUN(() => {
 			}, () => {
 				uploadButton.empty();
 				uploadButton.append(FontAwesome.GetIcon('upload'));
+				uploadButton.addStyle({
+					color : '#ccc'
+				});
 			}, () => {
 				uploadButton.empty();
 				uploadButton.append(FontAwesome.GetIcon('upload'));
+				uploadButton.addStyle({
+					color : '#ccc'
+				});
 				
 				uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+					return;
 					chatsRef.push({
 						userId : user.uid,
 						name : user.displayName,
@@ -648,6 +655,7 @@ RUN(() => {
 							// 아이폰은 지원 안함
 							if (global.Notification === undefined || Notification.permission !== 'granted') {
 								DELAY(() => {
+									return;
 									chatsRef.push({
 										userId : user.uid,
 										name : user.displayName,
@@ -832,7 +840,12 @@ RUN(() => {
 					padding : 10
 				},
 				inputStyle : {
-					color : skinData.color
+					color : skinData.color,
+					onDisplayResize : (width) => {
+						return {
+							width : width - 100
+						};
+					}
 				},
 				name : 'message',
 				placeholder : '메시지를 입력하세요.',
@@ -1094,6 +1107,7 @@ RUN(() => {
 									user.updateProfile({
 										displayName : args[0]
 									}).then(() => {
+										return;
 										chatsRef.push({
 											isNameChanged : true,
 											originName : originName,
@@ -1155,6 +1169,7 @@ RUN(() => {
 						
 						// 메시지 전송
 						else {
+							return;
 							chatsRef.push({
 								userId : user.uid,
 								name : user.displayName,
